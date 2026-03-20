@@ -142,6 +142,21 @@
       pointer-events: none;
     }
 
+    /* The actual video element - as iframe is not working */
+    .hero-video video {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 178vh;
+      height: 100vh;
+      min-width: 100%;
+      min-height: 56.25vw;
+      border: none;
+      opacity: 0.45;
+      pointer-events: none;
+      object-fit: cover;
+    }
+
     /* Dark gradient overlay above the video */
     .hero-overlay {
       position: absolute;
@@ -1245,6 +1260,56 @@
       footer           { flex-direction: column; text-align: center; }
       .hero-video iframe { opacity: 0.2; }  /* dimmer on mobile */
     }
+
+
+
+    /* YT video Thumbnail*/
+    .video-thumb {
+      display: block;
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      background: #111;
+      text-decoration: none;
+      overflow: hidden;
+    }
+
+    .video-thumb img {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0.85;
+      transition: opacity 0.2s;
+    }
+
+    .video-thumb:hover img { opacity: 1; }
+
+    .play-btn {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px; height: 60px;
+      background: rgba(230,59,46,0.9);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s;
+    }
+
+    .video-thumb:hover .play-btn {
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+
+    .play-btn::after {
+      content: '';
+      width: 0; height: 0;
+      border-top: 11px solid transparent;
+      border-bottom: 11px solid transparent;
+      border-left: 18px solid white;
+      margin-left: 4px;
+    }
   </style>
 </head>
 <body>
@@ -2010,14 +2075,10 @@
 
     <!-- Video 2: 24th Race Highlights -->
     <div class="video-card">
-      <div class="video-wrap">
-        <iframe
-          src="https://www.youtube.com/watch?v=wPHYLAnpMOU"
-          title="Autonomous RC Racing — 24th Race Highlights"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen>
-        </iframe>
-      </div>
+      <a href="https://www.youtube.com/watch?v=wPHYLAnpMOU" target="_blank" class="video-thumb">
+        <img src="https://img.youtube.com/vi/wPHYLAnpMOU/maxresdefault.jpg" alt="24th Race Highlights" />
+        <div class="play-btn"></div>
+      </a>
       <div class="video-info">
         <div class="video-tag">Race Highlights</div>
         <div class="video-title">Autonomous RC Racing — 24th Race Highlights</div>
@@ -2027,14 +2088,10 @@
 
     <!-- Video 3: Steven Gong — Build Series playlist -->
     <div class="video-card">
-      <div class="video-wrap">
-        <iframe
-          src="https://www.youtube.com/watch?v=zuyOdaQ2xuw"
-          title="Autonomous Racing Build Series"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen>
-        </iframe>
-      </div>
+      <a href="https://www.youtube.com/watch?v=zuyOdaQ2xuw" target="_blank" class="video-thumb">
+        <img src="https://img.youtube.com/vi/zuyOdaQ2xuw/maxresdefault.jpg" alt="I RACED My Self-Driving RC Car" />
+        <div class="play-btn"></div>
+      </a>
       <div class="video-info">
         <div class="video-tag">Build Series</div>
         <div class="video-title">Autonomous Racing — Build &amp; Learn Series</div>
