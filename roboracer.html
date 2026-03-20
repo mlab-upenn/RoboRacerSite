@@ -1,0 +1,2319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- This makes the page scale correctly on phones and tablets -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- title shown in the browser tab -->
+  <title>RoboRacer @ Penn</title>
+
+  <!-- Google fonts used for the page -->
+  <!-- Google Fonts — Barlow Condensed for headings, Barlow for body, Share Tech Mono for labels -->
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+
+  <style>
+    /* Basic global color and font variables so changing colors is easy */
+    :root {
+      --red:     #E63B2E;   /* main accent — buttons, highlights */
+      --dark:    #0A0A0A;   /* page background */
+      --dark2:   #111111;   /* alternate section background */
+      --dark3:   #1A1A1A;   /* card backgrounds */
+      --line:    #2E2E2E;   /* borders and dividers */
+      --muted:   #AAAAAA;   /* secondary text */
+      --white:   #F0F0F0;   /* primary text */
+
+      --mono:    'Share Tech Mono', monospace;       /* labels, nav, badges */
+      --display: 'Barlow Condensed', sans-serif;     /* big headings */
+      --body:    'Barlow', sans-serif;               /* paragraphs */
+    }
+
+    /* Remove default spacing from all elements */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* smooth scrolling when clicking nav links */
+    html { scroll-behavior: smooth; } 
+
+    /* Main page styling */
+    body {
+      background: var(--dark);
+      color: var(--white);
+      font-family: var(--body);
+      line-height: 1.6;
+      overflow-x: hidden;  /* prevent accidental horizontal scrollbar */
+    }
+
+    /* thin red scrollbar */
+    ::-webkit-scrollbar       { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: var(--red); }
+
+
+   /*
+       NAVIGATION BAR
+       Fixed at top, blurs the content behind it
+   */
+    nav {
+      position: fixed;          /* stays at top while scrolling */
+      top: 0; left: 0; right: 0;
+      z-index: 100;             /* sits above everything else */
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      background: rgba(10, 10, 10, 0.92);   /* slightly transparent */
+      backdrop-filter: blur(12px);           
+      border-bottom: 1px solid var(--line);
+    }
+
+    /* Logo image in the nav */
+    .nav-logo img {
+      height: 50px;
+      /*filter: invert(1) brightness(2);  /* turns black PNG white */
+    }
+
+    /* Nav links list */
+    nav ul {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    /* Navigation link styling */
+    nav a {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    /* Hover effect for menu links */
+    nav ul a:hover { color: var(--red); }
+
+    /* Red "Start Learning" button on the right */
+    .nav-btn {
+      color: white !important;
+      background: var(--red);
+      padding: 8px 20px;
+    }
+    .nav-btn:hover { background: #b52d22 !important; }
+
+
+    /*
+       HERO SECTION
+       Full viewport landing section with video background.
+    */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;   /* pushes content to the bottom */
+      padding: 0 48px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* YouTube video playing silently behind everything */
+    .hero-video {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;   /* can't click on it */
+      z-index: 0;
+    }
+
+    /* The actual video element */
+    .hero-video iframe {
+      /* trick to make a 16:9 iframe fill any screen size */
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 178vh;
+      height: 100vh;
+      min-width: 100%;
+      min-height: 56.25vw;
+      border: none;
+      opacity: 0.35;       /* diming it so text is readable */
+      pointer-events: none;
+    }
+
+    /* Dark gradient overlay above the video */
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(180deg, rgba(10,10,10,0.2) 40%, rgba(10,10,10,0.95) 85%, rgba(10,10,10,1) 100%),
+        linear-gradient(90deg, rgba(10,10,10,0.7), rgba(10,10,10,0.1));
+    }
+
+    /* Faint grid texture over the video */
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* All hero text, sits on top of video layers */
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 860px;
+    }
+
+    /* Small red line above the logo e.g. "ESE 6150 · Penn" */
+    .hero-eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Short red line before the eyebrow text - here it's empty*/
+    .hero-eyebrow::before {
+      content: '';
+      width: 32px;
+      height: 1px;
+      background: var(--red);
+    }
+
+    /* Big logo in the hero */
+    .hero-logo {
+      height: clamp(120px, 20vw, 150px);   /* scales with screen width */
+     /* filter: invert(1) brightness(2);     /* black PNG → white */
+      display: block;
+      margin-bottom: 20px;
+    }
+
+    /* "Autonomous Racing" subtitle under logo */
+    .hero-subtitle {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(18px, 2.8vw, 36px);
+      color: var(--red);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 16px;
+    }
+
+    /* One-liner description */
+    .hero-desc {
+      font-size: 17px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.65);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    /*  Concept → Code → Competition motto */
+    .hero-motto {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(20px, 3vw, 34px);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .hero-motto .word {
+      color: var(--white);
+      border-bottom: 2px solid var(--red);  /* red underline highlight */
+      padding-bottom: 2px;
+    }
+
+    .hero-motto .arrow { color: var(--red); }
+
+    /* START LEARNING Buttons row */
+    .hero-buttons { display: flex; gap: 16px; flex-wrap: wrap; }
+
+    /* Solid red button */
+    .btn-red {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--red);
+      color: white;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 14px 28px;
+      text-decoration: none;
+    }
+    .btn-red:hover { background: #b52d22; }
+
+    /* outline button - GITHUB COURSEKIT */
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 14px 28px;
+      text-decoration: none;
+    }
+    .btn-outline:hover { border-color: var(--red); color: var(--red); }
+
+    /* Stats bar at the bottom of the hero */
+    .hero-stats {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      margin-top: 60px;
+      padding-top: 28px;
+      border-top: 1px solid var(--line);
+    }
+
+    .stat {
+      flex: 1;
+      padding-right: 32px;
+      margin-right: 32px;
+      border-right: 1px solid var(--line);
+    }
+    .stat:last-child { border-right: none; margin-right: 0; padding-right: 0; }
+
+    .stat-num {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 38px;
+      color: var(--white);
+      line-height: 1;
+    }
+    .stat-num em { color: var(--red); font-style: normal; }  /* e.g. the "wk" in 15wk */
+
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+
+    /*
+       SHARED STYLES — used by every section
+    */
+    section { padding: 100px 48px; }
+
+    /* "01  Section Title ————" header row */
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 20px;
+      margin-bottom: 60px;
+    }
+
+    .section-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--red);
+      letter-spacing: 0.1em;
+    }
+
+    .section-title {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(36px, 5vw, 64px);
+      color: var(--white);
+      line-height: 1;
+    }
+
+    /* Horizontal rule that stretches to fill remaining space */
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+      max-width: 200px;
+    }
+
+
+    /*
+       SECTION 01 — ABOUT
+    */
+    .about { background: var(--dark2); }
+
+    /* Two columns: text left, feature list right */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+    }
+
+    .about-lead {
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: clamp(22px, 2.5vw, 32px);
+      color: var(--white);
+      line-height: 1.3;
+      margin-bottom: 24px;
+    }
+
+    .about-body {
+      font-size: 15px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    /* Feature list items on the right column */
+    .feature-list { list-style: none; }
+
+    .feature-item {
+      display: flex;
+      gap: 16px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .feature-item:first-child { border-top: 1px solid var(--line); }
+
+    /* Small red-tinted icon box */
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+      background: rgba(230,59,46,0.1);
+      border: 1px solid rgba(230,59,46,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .feature-text h4 {
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+    .feature-text p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+
+    /*
+       SECTION 02 — MODULES
+       3-column grid of cards, one per module
+    */
+    .modules { background: var(--dark); }
+
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;               /* 1px gap shows the --line background as borders */
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+
+    .module-card {
+      background: var(--dark2);
+      padding: 32px;
+      position: relative;
+      transition: background 0.2s;
+    }
+
+    /* Red left border that grows down on hover */
+    .module-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px;
+      height: 0;
+      background: var(--red);
+      transition: height 0.3s;
+    }
+    .module-card:hover { background: var(--dark3); }
+    .module-card:hover::before { height: 100%; }
+
+    .module-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 12px;
+    }
+
+    .module-title {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 22px;
+      color: var(--white);
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .module-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+
+    .module-list li {
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Red dot bullet point */
+    .module-list li::before {
+      content: '';
+      width: 4px; height: 4px;
+      background: var(--red);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+
+    /*
+       SECTION 03 — SCHEDULE
+       Plain HTML table — easy to add/edit rows manually
+    
+    
+    .schedule { background: var(--dark2); }
+
+    .schedule-table { width: 100%; border-collapse: collapse; }
+
+    /* Table header row 
+    .schedule-table th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--red);
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+    }
+
+    /* Regular table cells 
+    .schedule-table td {
+      padding: 16px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.75);
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    /* Hover highlight on each row 
+    .schedule-table tr:hover td { background: rgba(230,59,46,0.04); }
+
+    /* Module name rows — dark background, red text, spans all columns 
+    .module-row td {
+      background: var(--dark3);
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--red);
+      letter-spacing: 0.05em;
+      padding: 10px 16px;
+    }
+
+    /* Date cell style 
+    .td-date {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--red);
+      white-space: nowrap;
+    }
+
+    /* Lecture title style 
+    .td-lecture {
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--white);
+    }
+
+    /* Tutorial / assignment cell — smaller, muted 
+    .td-small { font-size: 13px; color: var(--muted); }
+
+    /* Race rows get a subtle red background 
+    .race-row td {
+      background: rgba(230,59,46,0.06);
+      border-color: rgba(230,59,46,0.2);
+    }
+
+    /* "🏁 Race 1" badge inside a race row 
+    .race-badge {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--red);
+      border: 1px solid rgba(230,59,46,0.4);
+      padding: 3px 10px;
+    }
+
+    /* Spring Break row 
+    .break-row td {
+      background: var(--dark3);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-align: center;
+    }
+    */
+
+    /*
+    LABS TIMELINE
+    */
+.labs-timeline { display: flex; flex-direction: column; }
+
+.lab-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 140px;
+  gap: 24px;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+  transition: background 0.15s;
+}
+
+.lab-row:first-child { border-top: 1px solid var(--line); }
+
+.lab-row:hover {
+  background: rgba(230,59,46,0.04);
+  padding-left: 12px;
+  padding-right: 12px;
+  margin: 0 -12px;
+}
+
+/* Race rows get a red tint */
+.race-row-lab td,
+.race-row-lab {
+  background: rgba(230,59,46,0.06);
+  border-color: rgba(230,59,46,0.2) !important;
+}
+
+.lab-num {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--red);
+  letter-spacing: 0.05em;
+}
+
+.lab-name {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--white);
+}
+
+.lab-desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.lab-badge {
+  justify-self: end;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border: 1px solid;
+  text-align: center;
+}
+
+.badge-intro    { color: var(--muted);  border-color: var(--line); }
+.badge-reactive { color: #5B9BD5; border-color: rgba(91,155,213,0.3);  background: rgba(91,155,213,0.06); }
+.badge-slam     { color: #70C472; border-color: rgba(112,196,114,0.3); background: rgba(112,196,114,0.06); }
+.badge-planning { color: #FF6B35; border-color: rgba(255,107,53,0.3);  background: rgba(255,107,53,0.06); }
+.badge-vision   { color: #C97FDB; border-color: rgba(201,127,219,0.3); background: rgba(201,127,219,0.06); }
+.badge-race     { color: var(--red); border-color: rgba(230,59,46,0.3); background: rgba(230,59,46,0.1); font-weight: 700; }
+
+@media (max-width: 900px) {
+  .lab-row { grid-template-columns: 60px 1fr; }
+  .lab-badge { display: none; }
+}
+
+
+    /*
+       SECTION 04 — HARDWARE
+       Left: car photo with scanning animation | Right: spec list
+    */
+    .platform { background: var(--dark); }
+
+    .platform-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    /* Box that holds the car photo */
+    .platform-photo {
+      border: 1px solid var(--line);
+      background: var(--dark3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+    }
+
+    /* Car photo */
+    .platform-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 20px;
+    }
+
+    /* Red scanning line that moves top to bottom over hardware image */
+    .scan-line {
+      position: absolute;
+      left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(230,59,46,0.6), transparent);
+      animation: scan 3s ease-in-out infinite;
+    }
+
+    @keyframes scan {
+      0%   { top: 0%;   opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.5; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    /* Each spec row: key on the left, value on the right */
+    .spec-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .spec-key {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .spec-val {
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--white);
+    }
+
+
+    /* 
+       SECTION 05 — COMPETITION
+       Big banner with ghost "RACE" text + race cards on the right
+    */
+    .competition { background: var(--dark2); }
+
+    .comp-banner {
+      background: var(--dark3);
+      border: 1px solid var(--line);
+      padding: 60px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Giant ghost "RACE" word in the background */
+    .comp-banner::before {
+      content: 'RACE';
+      position: absolute;
+      right: -10px; bottom: -20px;
+      font-family: var(--display);
+      font-weight: 900;
+      font-size: 200px;
+      color: rgba(255,255,255,0.02);
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .comp-tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 12px;
+    }
+
+    .comp-title {
+      font-family: var(--display);
+      font-weight: 900;
+      font-size: clamp(36px, 5vw, 60px);
+      color: var(--white);
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+
+    .comp-desc {
+      font-size: 15px;
+      color: rgba(255,255,255,0.55);
+      max-width: 500px;
+      line-height: 1.7;
+    }
+
+    /* Stack of race cards on the right */
+    .race-cards { display: flex; flex-direction: column; gap: 12px; min-width: 220px; }
+
+    .race-card {
+      background: var(--dark);
+      border: 1px solid var(--line);
+      padding: 16px 20px;
+    }
+
+    /* Incourse race cards get a red border */
+    .race-card.active {
+      border-color: rgba(230,59,46,0.4);
+      background: rgba(230,59,46,0.05);
+    }
+
+    .race-card-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--red);
+      letter-spacing: 0.1em;
+      margin-bottom: 4px;
+    }
+
+    .race-card-name {
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--white);
+    }
+
+    .race-card-type { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+
+    /*
+       SECTION 06 — COMMUNITY VIDEOS
+       3 YouTube embeds + TU Wien results panel below
+    */
+    .videos { background: var(--dark); }
+
+    .videos-intro {
+      font-size: 17px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.65);
+      max-width: 640px;
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+
+    /* 3-column grid of video cards */
+    .videos-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 60px;
+    }
+
+    .video-card {
+      background: var(--dark3);
+      border: 1px solid var(--line);
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .video-card:hover {
+      border-color: rgba(230,59,46,0.4);
+      transform: translateY(-3px);
+    }
+
+    /* Keeps iframe at 16:9 ratio regardless of card width */
+    .video-wrap {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+    }
+    .video-wrap iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: none;
+    }
+
+    .video-info { padding: 20px 24px; }
+
+    .video-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 8px;
+    }
+
+    .video-title {
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 17px;
+      color: var(--white);
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+
+    .video-author { font-size: 12px; color: var(--muted); }
+
+    /* TU Wien / Scuderia Segfault panel — 2 columns */
+    .tuwien-panel {
+      background: var(--dark3);
+      border: 1px solid var(--line);
+      padding: 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: start;
+      position: relative;
+    }
+
+    /* Red accent line at the top of the panel */
+    .tuwien-panel::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--red), transparent);
+    }
+
+    .tuwien-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 12px;
+    }
+
+    .tuwien-title {
+      font-family: var(--display);
+      font-weight: 900;
+      font-size: clamp(32px, 4vw, 52px);
+      color: var(--white);
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+
+    .tuwien-desc {
+      font-size: 15px;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.8;
+      margin-bottom: 24px;
+    }
+
+    .tuwien-link {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: var(--red);
+      text-decoration: none;
+      border: 1px solid rgba(230,59,46,0.3);
+      padding: 8px 18px;
+      display: inline-block;
+    }
+    .tuwien-link:hover { background: rgba(230,59,46,0.1); }
+
+    /* Each competition result row */
+    .result-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .result-row:first-child { border-top: 1px solid var(--line); }
+
+    .result-place {
+      font-family: var(--display);
+      font-weight: 900;
+      font-size: 28px;
+      min-width: 56px;
+      text-align: center;
+    }
+
+    /* Medal colours */
+    .gold   { color: #FFD700; }
+    .silver { color: #C0C0C0; }
+    .bronze { color: #CD7F32; }
+
+    .result-event {
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--white);
+    }
+
+    .result-loc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+
+    /*
+       SECTION 07 — RESOURCES
+       4-column grid of link cards
+    */
+    .resources { background: var(--dark2); }
+
+    .resources-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--line);   /* 1px gap shows as border lines */
+      border: 1px solid var(--line);
+    }
+
+    .resource-card {
+      background: var(--dark3);
+      padding: 32px 28px;
+      text-decoration: none;
+      display: block;
+      position: relative;
+      transition: background 0.2s;
+    }
+
+    /* Arrow that appears on hover */
+    .resource-card::after {
+      content: '→';
+      position: absolute;
+      bottom: 20px; right: 24px;
+      font-size: 20px;
+      color: var(--red);
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: all 0.2s;
+    }
+    .resource-card:hover { background: var(--dark); }
+    .resource-card:hover::after { opacity: 1; transform: translateX(0); }
+
+    .resource-icon  { font-size: 24px; margin-bottom: 16px; display: block; }
+
+    .resource-title {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 20px;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+
+    .resource-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+
+    /*
+       SECTION 08 — INSTRUCTOR
+    */
+    .instructor { background: var(--dark2); }
+
+    /* Photo on the left, bio on the right */
+    .instructor-card {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 60px;
+      align-items: start;
+      background: var(--dark3);
+      border: 1px solid var(--line);
+      padding: 48px;
+      position: relative;
+    }
+
+    /* Red gradient bar across the top of the card */
+    .instructor-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--red), transparent);
+    }
+
+    /*
+      Photo placeholder — shows "RM" initials.
+    */
+    .instructor-photo {
+      width: 180px;
+      height: 180px;
+      background: var(--dark);
+      border: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--display);
+      font-weight: 900;
+      font-size: 52px;
+      color: rgba(255,255,255,0.15);
+    }
+
+    .instructor-name {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 36px;
+      color: var(--white);
+      margin-bottom: 6px;
+    }
+
+    .instructor-role {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 24px;
+    }
+
+    .instructor-bio {
+      font-size: 15px;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.8;
+      margin-bottom: 24px;
+    }
+
+    /* Row of link pills */
+    .instructor-links { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .inst-link {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      padding: 6px 14px;
+      transition: all 0.2s;
+    }
+    .inst-link:hover { color: var(--red); border-color: var(--red); }
+
+    /*
+       TAs
+    */
+
+    .ta-grid { 
+      display: grid; 
+      grid-template-columns: repeat(4, 1fr); 
+      gap: 1px; background: var(--line); 
+      border: 1px solid var(--line); 
+      margin-top: 0; 
+    }
+    
+    .ta-card { 
+      background: var(--dark3); 
+      padding: 28px 24px; 
+      transition: background 0.2s; 
+    }
+    
+    .ta-card:hover { background: var(--dark); }
+    
+    .ta-name { 
+      font-family: var(--display); 
+      font-weight: 700; 
+      font-size: 24px; 
+      color: var(--white); 
+      margin-bottom: 4px; 
+    }
+    
+    .ta-role { 
+      font-family: var(--mono); 
+      font-size: 10px; 
+      letter-spacing: 0.12em; 
+      text-transform: uppercase; 
+      color: var(--red); 
+      margin-bottom: 16px; 
+    }
+    
+    .ta-hours { 
+      font-size: 13px; 
+      color: rgba(255,255,255,0.6); 
+      line-height: 1.6; 
+    }
+    
+    .ta-hours-label { 
+      display: block; 
+      font-family: var(--mono); 
+      font-size: 10px; letter-spacing: 0.1em; 
+      text-transform: uppercase; 
+      color: var(--muted); 
+      margin-bottom: 3px; 
+    }
+    
+    @media (max-width: 900px) { 
+      .ta-grid { grid-template-columns: repeat(2, 1fr); } 
+    }
+
+
+    .ta-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--dark);
+      border: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 24px;
+      color: rgba(255,255,255,0.2);
+      margin-bottom: 12px;
+    }
+
+    /*
+       FOOTER
+    */
+    footer {
+      background: var(--dark);
+      border-top: 1px solid var(--line);
+      padding: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    /* Footer logo — dimmed version */
+    footer img {
+      height: 36px;
+      /*filter: invert(1) brightness(1.5);*/
+      opacity: 0.35;
+    }
+
+    .footer-info {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.8;
+    }
+
+    .footer-links { display: flex; gap: 24px; }
+
+    .footer-links a {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+    }
+    .footer-links a:hover { color: var(--red); }
+
+
+    /*
+       RESPONSIVE — collapses layout for mobile screens
+    */
+    @media (max-width: 900px) {
+      nav { padding: 0 24px; }
+      nav ul { display: none; }           /* hide nav links on small screens */
+      section { padding: 70px 24px; }
+      .hero { padding: 0 24px 60px; }
+      .hero-stats { flex-wrap: wrap; gap: 20px; }
+      .stat { border-right: none; margin-right: 0; min-width: 120px; }
+      .about-grid      { grid-template-columns: 1fr; gap: 40px; }
+      .modules-grid    { grid-template-columns: 1fr; }
+      .platform-grid   { grid-template-columns: 1fr; }
+      .comp-banner     { grid-template-columns: 1fr; }
+      .videos-grid     { grid-template-columns: 1fr; }
+      .tuwien-panel    { grid-template-columns: 1fr; gap: 32px; padding: 32px 24px; }
+      .resources-grid  { grid-template-columns: repeat(2, 1fr); }
+      .instructor-card { grid-template-columns: 1fr; gap: 32px; }
+      footer           { flex-direction: column; text-align: center; }
+      .hero-video iframe { opacity: 0.2; }  /* dimmer on mobile */
+    }
+  </style>
+</head>
+<body>
+
+
+<!--
+     NAVIGATION
+     Files needed: RoboRacer_Logo.png
+ -->
+<nav>
+
+  <!-- Logo — links back to top of page -->
+  <a href="#" class="nav-logo">
+    <img src="NewLogo.gif" alt="RoboRacer" />
+  </a>
+
+  <!-- Nav links — href matches section id below -->
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#modules">Modules</a></li>
+    <li><a href="#schedule">Schedule</a></li>
+    <li><a href="#platform">Hardware</a></li>
+    <li><a href="#competition">Competition</a></li>
+    <li><a href="#videos">Videos</a></li>
+    <li><a href="#resources">Resources</a></li>
+  </ul>
+
+  <!-- Call to action (CTA) button -->
+  <a href="#schedule" class="nav-btn">Start Learning</a>
+
+</nav>
+
+
+<!--
+     HERO
+     Background: YouTube video playing silently on loop
+     Content: logo, subtitle, motto, buttons, stats
+-->
+<section class="hero">
+
+  <!-- Silent background video -->
+  <div class="hero-video">
+    <video id="hero-vid" autoplay muted playsinline>
+      <source src="hero-edge-desktop.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <!-- Grid texture and dark overlay sit on top of the video -->
+  <div class="hero-grid"></div>
+  <div class="hero-overlay"></div>
+
+  <!-- All text content — sits above the video layers via z-index -->
+  <div class="hero-content">
+
+    <!-- Small red label -->
+    <div class="hero-eyebrow">ESE 6150 · University of Pennsylvania</div>
+
+    <!-- Big logo -->
+    <img src="NewLogo.gif" alt="RoboRacer" class="hero-logo" />
+
+    <!-- Subtitle line -->
+    <div class="hero-subtitle">Autonomous Racing</div>
+
+    <!-- One-line description -->
+    <p class="hero-desc">
+      Build, program, and race a 1/10th-scale autonomous vehicle.
+      From reactive control to full autonomy stacks — theory meets asphalt.
+    </p>
+
+    <!-- Motto — three words with red underline and red arrows -->
+    <div class="hero-motto">
+      <span class="word">Concept</span>
+      <span class="arrow">→</span>
+      <span class="word">Code</span>
+      <span class="arrow">→</span>
+      <span class="word">Competition</span>
+    </div>
+
+    <!-- Call to action buttons -->
+    <div class="hero-buttons">
+      <a href="#schedule" class="btn-red">→ View Schedule</a>
+      <a href="https://github.com/f1tenth/f1tenth_coursekit" target="_blank" class="btn-outline">GitHub Coursekit</a>
+    </div>
+
+  </div>
+
+  <!-- Stats bar at the bottom — edit numbers here -->
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">15<em>wk</em></div>
+      <div class="stat-label">Course Length</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">90<em>+</em></div>
+      <div class="stat-label">Universities Worldwide</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">18<em>+</em></div>
+      <div class="stat-label">Int'l Competitions</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">40<em>mph</em></div>
+      <div class="stat-label">Top Vehicle Speed</div>
+    </div>
+  </div>
+
+</section>
+
+
+<!--
+     SECTION 01 — ABOUT
+ -->
+<section class="about" id="about">
+
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">About the Course</h2>
+  </div>
+
+  <div class="about-grid">
+
+    <!-- Left column: paragraphs -->
+    <div>
+      <p class="about-lead">Not just another robotics course. This is autonomous driving under race conditions.</p>
+      <p class="about-body">RoboRacer (formerly F1TENTH) is a graduate-level project course at Penn Engineering where teams build and program 1/10th-scale autonomous race cars. Instead of exams, your grade is earned on the track.</p>
+      <p class="about-body">You'll implement a complete autonomy stack — reactive control, SLAM-based mapping, path planning, and vision-based perception — all deployed on real hardware at real speed.</p>
+      <p class="about-body">Taught by Prof. Rahul Mangharam, adopted by over 90 universities across 6 continents.</p>
+    </div>
+
+    <!-- Right column: feature list -->
+    <ul class="feature-list">
+
+      <li class="feature-item">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-text">
+          <h4>Hands-On From Day One</h4>
+          <p>Simulation and real hardware run in parallel. No waiting until the end to touch a robot.</p>
+        </div>
+      </li>
+
+      <li class="feature-item">
+        <div class="feature-icon">🏁</div>
+        <div class="feature-text">
+          <h4>Competition-Based Learning</h4>
+          <p>Three races replace exams. Same hardware for everyone — only algorithms decide the winner.</p>
+        </div>
+      </li>
+
+      <li class="feature-item">
+        <div class="feature-icon">🔬</div>
+        <div class="feature-text">
+          <h4>Research-Grade Topics</h4>
+          <p>SLAM, particle filters, MPC, RRT, neural perception — directly applicable to industry.</p>
+        </div>
+      </li>
+
+      <li class="feature-item">
+        <div class="feature-icon">🌐</div>
+        <div class="feature-text">
+          <h4>Open Source Platform</h4>
+          <p>All materials, code, and hardware designs are open. Join a global ROBORACER community.</p>
+        </div>
+      </li>
+
+    </ul>
+  </div>
+
+</section>
+
+
+<!--
+     SECTION 02 — MODULES
+     To add more module: copy one .module-card div and edit the text
+-->
+<section class="modules" id="modules">
+
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Course Modules</h2>
+  </div>
+
+  <div class="modules-grid">
+
+    <div class="module-card"> 
+      <div class="module-tag">Module A</div>
+      <div class="module-title">Intro to ROS, RoboRacer & Simulator</div>
+      <ul class="module-list">
+        <li>Intro to Autonomous Driving: Perception, Planning, Control</li>
+        <li>Automatic Emergency Braking</li>
+        <li>Rigid Body Transforms</li>
+        <li>ROS2 & Simulator Setup</li>
+      </ul>
+    </div>
+
+    <div class="module-card">
+      <div class="module-tag">Module B</div>
+      <div class="module-title">Reactive Methods</div>
+      <ul class="module-list">
+        <li>PID for Wall Following</li>
+        <li>Follow the Gap: Obstacle Avoidance</li>
+        <li>Vehicle States & Vehicle Dynamics</li>
+      </ul>
+    </div>
+
+    <div class="module-card">
+      <div class="module-tag">Module C</div>
+      <div class="module-title">Mapping & Localization</div>
+      <ul class="module-list">
+        <li>Localization I: Map Making & Particle Filters</li>
+        <li>Localization II: Bayes Filter Analysis</li>
+        <li>Graph-Based SLAM</li>
+      </ul>
+    </div>
+
+    <div class="module-card">
+      <div class="module-tag">Module D</div>
+      <div class="module-title">Perception, Planning & Control</div>
+      <ul class="module-list">
+        <li>Pure Pursuit Path Tracking</li>
+        <li>Race 1: Reactive Racing</li>
+        <li>Local Planning: RRT & Spline Planner</li>
+        <li>Race 2: Racing with map</li>
+        <li>Model Predictive Control</li>
+        <li>Ethics for Autonomous Vehicles</li>
+      </ul>
+    </div>
+
+    <div class="module-card">
+      <div class="module-tag">Module E</div>
+      <div class="module-title">Advanced Racing Algorithms & Special Topics</div>
+      <ul class="module-list">
+        <li>Advanced MPC</li>
+        <li>Learning-Based Methods</li>
+        <li>Guest Lectures</li>
+      </ul>
+    </div>
+
+    <div class="module-card">
+      <div class="module-tag">Module F</div>
+      <div class="module-title">Final Project</div>
+      <ul class="module-list">
+        <li>Final Project Presentations</li>
+        <li>Race 3: Grand Prix</li>
+      </ul>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!--
+     SECTION 03 — SCHEDULE
+     Source: https://docs.google.com/spreadsheets/d/1wQHe5NhgH...
+     To add a row: copy a <tr>...</tr> block and change the text
+     To add a module header: copy a <tr class="module-row">
+     Race rows use class="race-row" for red background
+-->
+<section class="schedule" id="schedule">
+
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Lab Assignments</h2>
+  </div>
+
+  <!-- Labs & Races timeline -->
+  <div class="labs-timeline">
+
+    <div class="lab-row">
+      <div class="lab-num">LAB 1</div>
+      <div>
+        <div class="lab-name">ROS2 Fundamentals</div>
+        <div class="lab-desc">Set up your ROS2 environment and write your first nodes</div>
+      </div>
+      <div class="lab-badge badge-intro">Intro</div>
+    </div>
+
+    <div class="lab-row">
+      <div class="lab-num">LAB 2</div>
+      <div>
+        <div class="lab-name">Automatic Emergency Braking</div>
+        <div class="lab-desc">Implement time-to-collision safety stop using LIDAR data</div>
+      </div>
+      <div class="lab-badge badge-intro">Intro</div>
+    </div>
+
+    <div class="lab-row">
+      <div class="lab-num">LAB 3</div>
+      <div>
+        <div class="lab-name">Wall Following</div>
+        <div class="lab-desc">PD controller to maintain constant wall distance — first autonomous drive</div>
+      </div>
+      <div class="lab-badge badge-reactive">Reactive</div>
+    </div>
+
+    <div class="lab-row">
+      <div class="lab-num">LAB 4</div>
+      <div>
+        <div class="lab-name">Follow the Gap</div>
+        <div class="lab-desc">Reactive obstacle avoidance using gap-finding on LIDAR scans</div>
+      </div>
+      <div class="lab-badge badge-reactive">Reactive</div>
+    </div>
+
+    <div class="lab-row race-row-lab">
+      <div class="lab-num">RACE 1</div>
+      <div>
+        <div class="lab-name">Reactive Racing · Levine Lobby</div>
+        <div class="lab-desc">Single vehicle obstacle avoidance</div>
+      </div>
+      <div class="lab-badge badge-race">🏁 Race</div>
+    </div>
+
+    <div class="lab-row">
+      <div class="lab-num">LAB 5</div>
+      <div>
+        <div class="lab-name">SLAM &amp; Pure Pursuit</div>
+        <div class="lab-desc">Build a map with slam_toolbox, localize with particle filter, follow a raceline</div>
+      </div>
+      <div class="lab-badge badge-slam">SLAM</div>
+    </div>
+
+    <div class="lab-row">
+      <div class="lab-num">LAB 6</div>
+      <div>
+        <div class="lab-name">Motion Planning</div>
+        <div class="lab-desc">Sampling-based local planner for dynamic obstacle avoidance</div>
+      </div>
+      <div class="lab-badge badge-planning">Planning</div>
+    </div>
+
+    <div class="lab-row race-row-lab">
+      <div class="lab-num">RACE 2</div>
+      <div>
+        <div class="lab-name">Racing with Map</div>
+        <div class="lab-desc">Single vehicle high-speed run — fastest lap wins</div>
+      </div>
+      <div class="lab-badge badge-race">🏁 Race</div>
+    </div>
+
+    <div class="lab-row">
+    <div class="lab-num">LAB 7</div>
+    <div>
+      <div class="lab-name">Vision Lab</div>
+      <div class="lab-desc">Camera access, calibration, distance measurement, lane detection &amp; object detection</div>
+    </div>
+    <div class="lab-badge badge-vision">Vision</div>
+  </div>
+
+  <div class="lab-row">
+    <div class="lab-num">LAB 8</div>
+    <div>
+      <div class="lab-name">Model Predictive Control</div>
+      <div class="lab-desc">Convex optimization, linearization &amp; discretization, optimal control for trajectory tracking</div>
+    </div>
+    <div class="lab-badge badge-planning">Control</div>
+  </div>
+
+  <div class="lab-row">
+    <div class="lab-num">FINAL</div>
+    <div>
+      <div class="lab-name">Final Project</div>
+      <div class="lab-desc">Develop your full autonomy stack for the Grand Prix</div>
+    </div>
+    <div class="lab-badge badge-vision">Project</div>
+  </div>
+
+    <div class="lab-row race-row-lab">
+      <div class="lab-num">RACE 3</div>
+      <div>
+        <div class="lab-name">Head-to-Head Autonomous Grand Prix</div>
+        <div class="lab-desc">Multi-vehicle, overtaking enabled, full autonomy stack</div>
+      </div>
+      <div class="lab-badge badge-race">🏁 Final</div>
+    </div>
+
+  </div>
+
+  <!-- View full schedule button -->
+  <div style="margin-top:32px; padding:20px 28px; background:var(--dark3); border:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+    <div>
+      <div style="font-family:var(--display); font-weight:700; font-size:20px; color:var(--white); margin-bottom:4px;">
+        Want to see the full schedule?
+      </div>
+      <div style="font-family:var(--mono); font-size:11px; color:var(--muted); letter-spacing:0.08em;">
+        Includes all dates, tutorials, assignments and recitations
+      </div>
+    </div>
+    <a href="https://docs.google.com/spreadsheets/d/1wQHe5NhgHJOZHu-soy2mrQD2J2Q5w6LgNwgiwY_NwrY"
+       target="_blank"
+       style="display:inline-flex; align-items:center; gap:8px; background:var(--red); color:white; font-family:var(--mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase; padding:12px 24px; text-decoration:none; white-space:nowrap;">
+      View Full Spreadsheet →
+    </a>
+  </div>
+
+</section>
+
+<!--
+<section class="schedule" id="schedule">
+
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">2026 Schedule</h2>
+  </div>
+
+  <table class="schedule-table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>#</th>
+        <th>Topic</th>
+        <th>Tutorial</th>
+        <th>Assignment</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <!-- MODULE A --
+      <tr class="module-row">
+        <td colspan="5">Module A — Introduction to ROS, RoboRacer &amp; Simulator</td>
+      </tr>
+      <tr>
+        <td class="td-date">Jan 14 W</td>
+        <td class="td-lecture">1</td>
+        <td>Intro to Autonomous Driving: Perception, Planning, Control</td>
+        <td class="td-small">T0: Setting Up VMware VM</td>
+        <td class="td-small">Lab 1: ROS2 out</td>
+      </tr>
+      <tr>
+        <td class="td-date">Jan 16 F</td>
+        <td class="td-lecture">—</td>
+        <td>Recitation: Introduction to ROS2</td>
+        <td class="td-small">T1: Intro to ROS2</td>
+        <td class="td-small"></td>
+      </tr>
+      <tr>
+        <td class="td-date">Jan 21 W</td>
+        <td class="td-lecture">2</td>
+        <td>Automatic Emergency Braking</td>
+        <td class="td-small">T2: Intro to Git</td>
+        <td class="td-small"></td>
+      </tr>
+      <tr>
+        <td class="td-date">Jan 23 F</td>
+        <td class="td-lecture">—</td>
+        <td>Recitation: RoboRacer Sim Tutorial</td>
+        <td class="td-small">T3: Intro to RoboRacer Sim</td>
+        <td class="td-small">Lab 2: AEB out</td>
+      </tr>
+      <tr>
+        <td class="td-date">Jan 26 M</td>
+        <td class="td-lecture">3</td>
+        <td>Rigid Body Transforms</td>
+        <td class="td-small"></td>
+        <td class="td-small"></td>
+      </tr>
+
+      <!-- MODULE B --
+      <tr class="module-row">
+        <td colspan="5">Module B — Reactive Methods</td>
+      </tr>
+      <tr>
+        <td class="td-date">Jan 28 W</td>
+        <td class="td-lecture">4</td>
+        <td>PID for Wall Following</td>
+        <td class="td-small">T4: ROS2 and tf2</td>
+        <td class="td-small"></td>
+      </tr>
+      <tr>
+        <td class="td-date">Jan 30 F</td>
+        <td class="td-lecture">—</td>
+        <td>Recitation: Setting Up the Car</td>
+        <td class="td-small">T5: Car &amp; Battery Safety</td>
+        <td class="td-small">Lab 3: Wall Following out · Lab 1 due</td>
+      </tr>
+      <tr>
+        <td class="td-date">Feb 2 M</td>
+        <td class="td-lecture">5</td>
+        <td>Follow the Gap: Obstacle Avoidance</td>
+        <td class="td-small">T5: Setting Up the Car</td>
+        <td class="td-small"></td>
+      </tr>
+      <tr>
+        <td class="td-date">Feb 4 W</td>
+        <td class="td-lecture">6</td>
+        <td>Vehicle States &amp; Vehicle Dynamics</td>
+        <td class="td-small">T5: Setting Up the Car</td>
+        <td class="td-small"></td>
+      </tr>
+      <tr>
+        <td class="td-date">Feb 6 F</td>
+        <td class="td-lecture">—</td>
+        <td>Recitation: Setting Up the Car (cont.)</td>
+        <td class="td-small">T5: Setting Up the Car</td>
+        <td class="td-small">Lab 2 due</td>
+      </tr>
+
+      <!-- MODULE C --
+      <tr class="module-row">
+        <td colspan="5">Module C — Mapping &amp; Localization</td>
+      </tr>
+      <tr>
+        <td class="td-date">Feb 9 M</td>
+        <td class="td-lecture">7</td>
+        <td>Localization I: Map Making &amp; Particle Filters</td>
+        <td class="td-small">Race Prep OH</td>
+        <td class="td-small">Lab 4: Follow the Gap out</td>
+      </tr>
+      <tr>
+        <td class="td-date">Feb 11 W</td>
+        <td class="td-lecture">8</td>
+        <td>Localization II: Analysis of Bayes &amp; Particle Filters</td>
+        <td class="td-small">Race Prep OH</td>
+        <td class="td-small"></td>
+      </tr>
+      <tr>
+        <td class="td-date">Feb 13 F</td>
+        <td class="td-lecture">—</td>
+        <td>Recitation: VESC Tuning</td>
+        <td class="td-small">T5: Setting Up the Car</td>
+        <td class="td-small">Lab 3 due</td>
+      </tr>
+      <tr>
+        <td class="td-date">Feb 16 M</td>
+        <td class="td-lecture">9</td>
+        <td>Introduction to Graph-Based SLAM</td>
+        <td class="td-small"></td>
+        <td class="td-small"></td>
+      </tr>
+
+      <!-- MODULE D --
+      <tr class="module-row">
+        <td colspan="5">Module D — Perception, Planning &amp; Control</td>
+      </tr>
+      <tr>
+        <td class="td-date">Feb 18 W</td>
+        <td class="td-lecture">10</td>
+        <td>Pure Pursuit</td>
+        <td class="td-small"></td>
+        <td class="td-small"></td>
+      </tr>
+      <tr>
+        <td class="td-date">Feb 20 F</td>
+        <td class="td-lecture">—</td>
+        <td>Recitation: Race 1 Prep &amp; Debugging ROS Nodes</td>
+        <td class="td-small">T6: Debugging ROS Nodes</td>
+        <td class="td-small"></td>
+      </tr>
+      <tr>
+        <td class="td-date">Feb 23 M</td>
+        <td class="td-lecture">—</td>
+        <td>No Classes</td>
+        <td class="td-small"></td>
+        <td class="td-small">Lab 4 due</td>
+      </tr>
+
+      <!-- Race row — highlighted in red --
+      <tr class="race-row">
+        <td class="td-date">Feb 25 W</td>
+        <td><span class="race-badge">🏁 Race 1</span></td>
+        <td class="td-lecture">Reactive Racing · Levine Lobby</td>
+        <td class="td-small">Practice Fri–Tue in Levine Lobby</td>
+        <td class="td-small"></td>
+      </tr>
+
+      <tr>
+        <td class="td-date">Feb 27 F</td>
+        <td class="td-lecture">—</td>
+        <td>Recitation: Code Review</td>
+        <td class="td-small">Code Review</td>
+        <td class="td-small"></td>
+      </tr>
+      <tr>
+        <td class="td-date">Mar 2 M</td>
+        <td class="td-lecture">11</td>
+        <td>Local Planning: RRT, Spline Based Planner</td>
+        <td class="td-small"></td>
+        <td class="td-small">Lab 5: SLAM &amp; Pure Pursuit out</td>
+      </tr>
+      <tr>
+        <td class="td-date">Mar 4 W</td>
+        <td class="td-lecture">12</td>
+        <td>Final Project Overview</td>
+        <td class="td-small">T7: Running slam_toolbox and pf</td>
+        <td class="td-small"></td>
+      </tr>
+      <tr>
+        <td class="td-date">Mar 6 F</td>
+        <td class="td-lecture">—</td>
+        <td>Optional Office Hours</td>
+        <td class="td-small"></td>
+        <td class="td-small"></td>
+      </tr>
+
+      <!-- Spring break row --
+      <tr class="break-row">
+        <td colspan="5">— Spring Break · Mar 9–13 —</td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <!-- Link to the full Google Sheet --
+  <p style="margin-top:20px; font-family:var(--mono); font-size:11px; color:var(--muted); letter-spacing:0.1em;">
+    Schedule continues after Spring Break — check Canvas for updates. &nbsp;
+    <a href="https://docs.google.com/spreadsheets/d/1wQHe5NhgHJOZHu-soy2mrQD2J2Q5w6LgNwgiwY_NwrY"
+       target="_blank"
+       style="color:var(--red); text-decoration:none;">
+      View Full Spreadsheet →
+    </a>
+  </p>
+
+</section>
+
+--->
+
+
+<!--
+     SECTION 04 — HARDWARE
+     Left: real car photo | Right: spec table
+     File needed: f1tenth_car.png
+ -->
+<section class="platform" id="platform">
+
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">The Hardware</h2>
+  </div>
+
+  <div class="platform-grid">
+
+    <!-- Car photo box with scanning animation -->
+    <div class="platform-photo">
+      <div class="scan-line"></div>
+      <img src="hardware.png" alt="RoboRacer Race Car" />
+    </div>
+
+    <!-- Spec rows — edit values on the right side -->
+    <div>
+      <div class="spec-row">
+        <span class="spec-key">Platform</span>
+        <span class="spec-val">Traxxas 1/10th Scale Chassis</span>
+      </div>
+      <div class="spec-row">
+        <span class="spec-key">Compute</span>
+        <span class="spec-val">NVIDIA Jetson Orin NX</span>
+      </div>
+      <div class="spec-row">
+        <span class="spec-key">Primary Sensor</span>
+        <span class="spec-val">Hokuyo UST-10LX 2D LIDAR</span>
+      </div>
+      <div class="spec-row">
+        <span class="spec-key">Camera</span>
+        <span class="spec-val">Intel RealSense D435 RGB-D</span>
+      </div>
+      <div class="spec-row">
+        <span class="spec-key">Motor Controller</span>
+        <span class="spec-val">VESC 6 Electric Speed Controller</span>
+      </div>
+      <div class="spec-row">
+        <span class="spec-key">Top Speed</span>
+        <span class="spec-val">~40 mph (64 km/h)</span>
+      </div>
+      <div class="spec-row">
+        <span class="spec-key">Software Stack</span>
+        <span class="spec-val">ROS2 Humble · Ubuntu 22.04</span>
+      </div>
+      <div class="spec-row">
+        <span class="spec-key">Simulator</span>
+        <span class="spec-val">RoboRacer (formerly F1TENTH) Gym (OpenAI Gym API)</span>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- 
+     SECTION 05 — COMPETITION
+ -->
+<section class="competition" id="competition">
+
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Competition</h2>
+  </div>
+
+  <div class="comp-banner">
+
+    <!-- Left: description -->
+    <div>
+      <div class="comp-tag">RoboRacer (formerly F1TENTH) Autonomous Grand Prix — Global</div>
+      <h3 class="comp-title">Race the World's Best</h3>
+      <p class="comp-desc">
+        Penn teams compete at ICRA, IROS, IEEE IV, and CPSweek.
+        Over 18 international competitions hosted, 90+ academic partners worldwide.
+        Penn has taken home the trophy multiple times.
+      </p>
+    </div>
+
+    <!-- Right: race cards — adding class="active" for red border -->
+    <div class="race-cards">
+      <div class="race-card active">
+        <div class="race-card-num">IN-COURSE</div>
+        <div class="race-card-name">Race 1 — Reactive Racing</div>
+        <div class="race-card-type">Single vehicle · Wall following &amp; gap</div>
+      </div>
+      <div class="race-card active">
+        <div class="race-card-num">IN-COURSE</div>
+        <div class="race-card-name">Race 2 — Racing with map</div>
+        <div class="race-card-type">Single vehicle · SLAM + Pure Pursuit</div>
+      </div>
+      <div class="race-card active">
+        <div class="race-card-num">FINAL</div>
+        <div class="race-card-name">Race 3 — Grand Prix</div>
+        <div class="race-card-type">Head-to-head · Full stack</div>
+      </div>
+      <div class="race-card">
+        <div class="race-card-num">INTERNATIONAL</div>
+        <div class="race-card-name">ICRA / IROS / IEEE IV</div>
+        <div class="race-card-type">Global competition series</div>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!--
+     SECTION 06 — COMMUNITY VIDEOS
+     To swap a video: change the YouTube video ID in the iframe src
+     Format: https://www.youtube.com/embed/VIDEO_ID_HERE
+-->
+<section class="videos" id="videos">
+
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2 class="section-title">Community Videos</h2>
+  </div>
+
+  <p class="videos-intro">
+    Watch RoboRacer in action — race highlights, strategy breakdowns,
+    and behind-the-scenes builds from the global community.
+  </p>
+
+  <!-- 3 videos side by side -->
+  <div class="videos-grid">
+
+    <!-- Video 1: Steven Gong — Racing Strategy -->
+    <div class="video-card">
+      <div class="video-wrap">
+        <iframe
+          src="https://www.youtube.com/watch?v=_RB63z6lUEE"
+          title="RoboRacer (formerly F1Tenth) Racing Strategy with Foxglove"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div class="video-info">
+        <div class="video-tag">Strategy &amp; Tools</div>
+        <div class="video-title">RoboRacer (formerly F1Tenth) Racing Strategy with Foxglove</div>
+        <div class="video-author">xLAB for Safe Autonomous Systems</div>
+      </div>
+    </div>
+
+    <!-- Video 2: 24th Race Highlights -->
+    <div class="video-card">
+      <div class="video-wrap">
+        <iframe
+          src="https://www.youtube.com/watch?v=wPHYLAnpMOU"
+          title="Autonomous RC Racing — 24th Race Highlights"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div class="video-info">
+        <div class="video-tag">Race Highlights</div>
+        <div class="video-title">Autonomous RC Racing — 24th Race Highlights</div>
+        <div class="video-author">The RoboRacer Foundation</div>
+      </div>
+    </div>
+
+    <!-- Video 3: Steven Gong — Build Series playlist -->
+    <div class="video-card">
+      <div class="video-wrap">
+        <iframe
+          src="https://www.youtube.com/watch?v=zuyOdaQ2xuw"
+          title="Autonomous Racing Build Series"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div class="video-info">
+        <div class="video-tag">Build Series</div>
+        <div class="video-title">Autonomous Racing — Build &amp; Learn Series</div>
+        <div class="video-author">Steven Gong · YouTube</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TU Wien / Scuderia Segfault results panel -->
+  <div class="tuwien-panel">
+
+    <!-- Left: description and link -->
+    <div>
+      <div class="tuwien-tag">Community Spotlight · TU Wien, Austria</div>
+      <h3 class="tuwien-title">Where This Course Takes You</h3>
+      <p class="tuwien-desc">
+        Scuderia Segfault is the student racing team from TU Wien, Austria. 
+  They run the same RoboRacer platform you'll build in this course and have 
+  dominated the international competition circuit. We highlight them because 
+  they represent what's possible — and because the global RoboRacer community 
+  is built on shared knowledge, open source code, and mutual respect between universities.
+</p>
+      </p>
+      <a href="https://www.tuwien.at/inf/scuderia-segfault/racing/" target="_blank" class="tuwien-link">
+        View Racing Page →
+      </a>
+    </div>
+
+    <!-- Right: race results — gold / silver / bronze classes change the colour -->
+    <div>
+      <div class="result-row">
+        <div class="result-place gold">1st</div>
+        <div>
+          <div class="result-event">22nd Grand Prix · CDC 2024</div>
+          <div class="result-loc">Milano, Italy</div>
+        </div>
+      </div>
+      <div class="result-row">
+        <div class="result-place silver">2nd</div>
+        <div>
+          <div class="result-event">21st Grand Prix · IROS 2024</div>
+          <div class="result-loc">Abu Dhabi, UAE</div>
+        </div>
+      </div>
+      <div class="result-row">
+        <div class="result-place silver">2nd</div>
+        <div>
+          <div class="result-event">11th Grand Prix · ICRA 2023</div>
+          <div class="result-loc">London, UK</div>
+        </div>
+      </div>
+      <div class="result-row">
+        <div class="result-place bronze">3rd</div>
+        <div>
+          <div class="result-event">10th Grand Prix · CPSweek</div>
+          <div class="result-loc">International</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!--
+     SECTION 07 — RESOURCES
+     To add a card: copy one .resource-card block and edit it
+ -->
+<section class="resources" id="resources">
+
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2 class="section-title">Resources</h2>
+  </div>
+
+  <div class="resources-grid">
+
+    <a href="https://github.com/f1tenth/f1tenth_coursekit" target="_blank" class="resource-card">
+      <span class="resource-icon">📦</span>
+      <div class="resource-title">Course Kit</div>
+      <div class="resource-desc">Labs, slides, and teaching materials on GitHub</div>
+    </a>
+
+    <a href="https://f1tenth.org" target="_blank" class="resource-card">
+      <span class="resource-icon">🌐</span>
+      <div class="resource-title">RoboRacer</div>
+      <div class="resource-desc">Global community, build guide, and competition info</div>
+    </a>
+
+    <a href="https://f1tenth-gym.readthedocs.io" target="_blank" class="resource-card">
+      <span class="resource-icon">🎮</span>
+      <div class="resource-title">Simulator</div>
+      <div class="resource-desc">RoboRacer Gym — OpenAI-compatible simulation environment</div>
+    </a>
+
+    <a href="https://f1tenth-coursekit.readthedocs.io" target="_blank" class="resource-card">
+      <span class="resource-icon">📖</span>
+      <div class="resource-title">Documentation</div>
+      <div class="resource-desc">ReadTheDocs — full course docs and lab writeups</div>
+    </a>
+
+  </div>
+
+</section>
+
+
+<!--
+     SECTION 08 — INSTRUCTOR
+ -->
+<section class="instructor" id="instructor">
+
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2 class="section-title">Instructor & Staff</h2>
+  </div>
+
+  <div class="instructor-card">
+
+    <!-- Photo column -->
+    <div>
+      <img src="RahulM.png" alt="Rahul Mangharam" style="width:180px; height:180px; object-fit:cover; object-position:center top; border:1px solid var(--line);">
+    </div>
+
+    <!-- Bio column -->
+    <div>
+      <div class="instructor-name">Rahul Mangharam</div>
+      <div class="instructor-role">Professor · ESE &amp; CIS · University of Pennsylvania</div>
+
+      <p class="instructor-bio">
+        Prof. Mangharam is a founding member of the PRECISE Center and director of the
+        Safe Autonomous Systems Lab at Penn. He created RoboRacer (formerly F1TENTH) in 2016 to make autonomous
+        vehicle education hands-on, competitive, and accessible. What started as a small
+        event has grown into a global platform adopted by over 90 universities.
+      </p>
+      <p class="instructor-bio">
+        His research focuses on safe autonomous systems — combining machine learning performance
+        with formal safety guarantees for real-world deployment in vehicles, medical devices, and energy systems.
+      </p>
+
+      <!-- Link pills -->
+      <div class="instructor-links">
+        <a href="https://xlab.upenn.edu/team/rahul/" target="_blank" class="inst-link">Faculty Page</a>
+        <a href="https://xlab.upenn.edu/" target="_blank" class="inst-link">xLab</a>
+        <a href="https://roboracer.ai/" target="_blank" class="inst-link">RoboRacer</a>
+        <a href="https://tinyml.seas.upenn.edu/" target="_blank" class="inst-link">TinyML @ Penn</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="margin-top:16px; padding:14px 20px; background:var(--dark3); border-left:3px solid var(--red); font-family:var(--mono); font-size:11px; color:var(--muted); letter-spacing:0.08em; line-height:1.8;">
+  Questions? Use <strong style="color:var(--white);">Ed Discussion</strong> (preferred) or email
+  <a href="mailto:rahulm@seas.upenn.edu" style="color:var(--red); text-decoration:none;">rahulm@seas.upenn.edu</a>
+  &nbsp;·&nbsp; Office Hours: <strong style="color:var(--white);">Mondays 1:45–2:45 pm · xLAB, Levine 279</strong>
+  </div>
+
+<h3 style="font-family:var(--display); font-weight:700; font-size:32px; color:var(--white); margin-top:60px; margin-bottom:28px;">
+  Teaching Assistants
+</h3>
+
+<div class="ta-grid">
+  <div class="ta-card">
+    <img src="Taher.png" alt="Taher" style="width:80px; height:80px; border-radius:50%; object-fit:cover; margin-bottom:12px; border:1px solid var(--line);">
+    <div class="ta-name">Taher</div>
+    <div class="ta-role">Teaching Assistant</div>
+    <div class="ta-hours">
+      <span class="ta-hours-label">Office Hours</span>
+      Tuesdays 12:00–1:00 pm<br>AGH 203
+    </div>
+    <div class="ta-hours" style="margin-top:12px;">
+      <span class="ta-hours-label">Recitation</span>
+      Fridays 12:00–1:00 pm<br>AGH 203
+    </div>
+  </div>
+  <div class="ta-card">
+    <img src="Jeff.png" alt="Jeff" style="width:80px; height:80px; border-radius:50%; object-fit:cover; margin-bottom:12px; border:1px solid var(--line);">
+    <div class="ta-name">Jeff</div>
+    <div class="ta-role">Teaching Assistant</div>
+    <div class="ta-hours">
+      <span class="ta-hours-label">Office Hours</span>
+      Thursdays 2:00–3:00 pm<br>AGH 216B
+    </div>
+    <div class="ta-hours" style="margin-top:12px;">
+      <span class="ta-hours-label">Recitation</span>
+      Fridays 12:00–1:00 pm<br>AGH 203
+    </div>
+  </div>
+  <div class="ta-card">
+    <img src="Ahmad.png" alt="Ahmad" style="width:80px; height:80px; border-radius:50%; object-fit:cover; margin-bottom:12px; border:1px solid var(--line);">
+    <div class="ta-name">Ahmad</div>
+    <div class="ta-role">Teaching Assistant</div>
+    <div class="ta-hours">
+      <span class="ta-hours-label">Recitation</span>
+      Fridays 12:00–1:00 pm<br>AGH 203
+    </div>
+  </div>
+    <div class="ta-card">
+    <img src="Akshaya.png" alt="Akshaya" style="width:80px; height:80px; border-radius:50%; object-fit:cover; margin-bottom:12px; border:1px solid var(--line);">
+    <div class="ta-name">Akshaya</div>
+    <div class="ta-role">Teaching Assistant</div>
+    <div class="ta-hours">
+      <span class="ta-hours-label">Office Hours</span>
+      Mondays 2:30–3:30 pm<br>AGH 203
+    </div>
+  </div>
+</div>
+
+</section>
+
+
+<!--
+     FOOTER
+-->
+<footer>
+
+  <img src="NewLogo.gif" alt="RoboRacer" />
+
+  <div class="footer-info">
+    ESE 6150 · F1/10 Autonomous Racing<br />
+    University of Pennsylvania · School of Engineering &amp; Applied Science
+  </div>
+
+  <div class="footer-links">
+    <a href="https://github.com/f1tenth" target="_blank">GitHub</a>
+    <a href="https://roboracer.ai/race" target="_blank">Races</a>
+    <a href="https://www.seas.upenn.edu" target="_blank">Penn SEAS</a>
+  </div>
+
+</footer>
+
+
+<!--
+     JAVASCRIPT
+     Only one thing: highlights the active nav link while scrolling
+-->
+<script>
+  // Hero video: plays edge video first, then race video, then loops 
+  const vid = document.getElementById('hero-vid');
+  const videos = [
+    'hero-edge-desktop.mp4',
+    'hero-background_1.mp4'
+  ];
+  let currentVideo = 0;
+
+  vid.addEventListener('ended', () => {
+    currentVideo = (currentVideo + 1) % videos.length;
+    vid.src = videos[currentVideo];
+    vid.play();
+  });
+
+
+  // Nav active link highlight on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks  = document.querySelectorAll('nav ul a');
+
+  window.addEventListener('scroll', () => {
+    let currentSection = '';
+
+    sections.forEach(section => {
+      if (window.scrollY >= section.offsetTop - 90) {
+        currentSection = section.getAttribute('id');
+      }
+    });
+
+    navLinks.forEach(link => {
+      if (link.getAttribute('href') === '#' + currentSection) {
+        link.style.color = 'var(--red)';
+      } else {
+        link.style.color = '';
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
