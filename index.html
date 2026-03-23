@@ -112,7 +112,7 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;   /* pushes content to the bottom */
+      justify-content: flex-end;   /* pushes content to the bottom - change to flex-end with bg video*/
       padding: 0 48px 80px;
       position: relative;
       overflow: hidden;
@@ -208,7 +208,7 @@
 
     /* Big logo in the hero */
     .hero-logo {
-      height: clamp(120px, 20vw, 150px);   /* scales with screen width */
+      height: clamp(120px, 20vw, 200px);   /* scales with screen width - i have increased it to 200 when adding bg video make it 150px */
      /* filter: invert(1) brightness(2);     /* black PNG → white */
       display: block;
       margin-bottom: 20px;
@@ -243,7 +243,7 @@
       margin-bottom: 40px;
       font-family: var(--display);
       font-weight: 700;
-      font-size: clamp(20px, 3vw, 34px);
+      font-size: clamp(24px, 4vw, 48px); /* earlier it was 20px, 3vw, 34px */
       letter-spacing: 0.04em;
       text-transform: uppercase;
     }
