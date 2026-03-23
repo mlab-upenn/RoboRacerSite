@@ -1350,12 +1350,13 @@
 -->
 <section class="hero">
 
-  <!-- Silent background video -->
+  <!-- Silent background video
   <div class="hero-video">
     <video id="hero-vid" autoplay muted playsinline>
       <source src="hero-edge-desktop.mp4" type="video/mp4">
     </video>
   </div>
+  --->
 
   <!-- Grid texture and dark overlay sit on top of the video -->
   <div class="hero-grid"></div>
@@ -2331,7 +2332,7 @@
 -->
 <script>
   // Hero video: plays edge video first, then race video, then loops 
-  const vid = document.getElementById('hero-vid');
+  /*const vid = document.getElementById('hero-vid');
   const videos = [
     'hero-edge-desktop.mp4',
     'hero-background_1.mp4'
@@ -2343,6 +2344,7 @@
     vid.src = videos[currentVideo];
     vid.play();
   });
+  */
 
 
   // Nav active link highlight on scroll
