@@ -1310,6 +1310,14 @@
       border-left: 18px solid white;
       margin-left: 4px;
     }
+
+    .hero-bg-img {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: url('racetrack.jpg') center center / cover no-repeat;
+      opacity: 0.4;
+    }
   </style>
 </head>
 <body>
@@ -1359,6 +1367,8 @@
   --->
 
   <!-- Grid texture and dark overlay sit on top of the video -->
+  <!-- Racetrack background image -->
+  <div class="hero-bg-img"></div>
   <div class="hero-grid"></div>
   <div class="hero-overlay"></div>
 
